@@ -44,3 +44,7 @@ CREATE TABLE etl_runs (
 SELECT * FROM etl_runs ORDER BY run_id DESC;
 
 SELECT COUNT(*) FROM crypto_prices;
+
+CREATE INDEX ix_crypto_prices_crypto_id ON crypto_prices(crypto_id);
+
+CREATE INDEX ix_crypto_prices_last_updated ON crypto_prices(last_updated DESC);

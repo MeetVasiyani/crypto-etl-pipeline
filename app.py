@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import text
 from db import get_engine
 
-st.title("🚀 Crypto Analytics Dashboard")
+st.title("Crypto Analytics Dashboard")
 
 engine = get_engine()
 
@@ -25,12 +25,19 @@ else:
     st.subheader("Latest Crypto Prices")
 
     latest_df = df.sort_values("ingestion_time", ascending=False).drop_duplicates("crypto_id")
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Coins Tracked", len(latest_df))
+    col2.metric("Top Market Cap", f"${latest_df['market_cap'].max():,.0f}")
+    col3.metric("Last Ingestion", latest_df['ingestion_time'].max())
+
+
 
     st.dataframe(latest_df[[
         "crypto_id", "symbol", "price_usd", "market_cap"
     ]])
 
-    st.subheader("📈 Price Trend")
+    st.subheader("Price Trend")
 
     selected_crypto = st.selectbox(
         "Select Cryptocurrency",

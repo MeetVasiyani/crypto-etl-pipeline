@@ -2,7 +2,7 @@ import logging
 import pandas as pd
 from sqlalchemy import text,types
 from db import get_engine
-from datetime import datetime
+from datetime import datetime, timezone
 
 def load_data(df : pd.DataFrame):
     if df.empty:
@@ -33,7 +33,7 @@ def load_data(df : pd.DataFrame):
             
             logging.info("Data loaded into staging table.")
             
-            merge_query = f"""
+            append_query = f"""
             INSERT INTO crypto_prices (
                 crypto_id, symbol, name, price_usd,
                 market_cap, volume_24h, last_updated, ingestion_time
@@ -44,9 +44,9 @@ def load_data(df : pd.DataFrame):
             FROM {staging_table};
             """
             
-            conn.execute(text(merge_query))
+            conn.execute(text(append_query))
             
-            logging.info("MERGE operation completed")
+            logging.info(f"Appended {len(df)} new records to crypto_prices")
             
     except Exception as e:
         logging.error(f"Error during load {e}")
@@ -61,7 +61,7 @@ def start_pipeline_run():
             OUTPUT INSERTED.run_id
             VALUES (:start_time, :status)
         """),{
-            "start_time": datetime.utcnow(),
+            "start_time": datetime.now(timezone.utc),
             "status" : "RUNNING"
         })
         
@@ -81,7 +81,7 @@ def end_pipeline_run(run_id, status, records_processed=0, error_message=None):
                 error_message = :error_message
             WHERE run_id = :run_id
         """),{
-            "end_time": datetime.utcnow(),
+            "end_time": datetime.now(timezone.utc),
             "status": status,
             "records_processed": records_processed,
             "error_message": error_message,

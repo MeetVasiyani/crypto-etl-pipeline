@@ -18,8 +18,8 @@ def get_engine():
 
     return engine
 
+engine = get_engine()
 def get_latest_timestamp():
-    engine = get_engine()
     
     with engine.connect() as conn:
         result = conn.execute(text("""
