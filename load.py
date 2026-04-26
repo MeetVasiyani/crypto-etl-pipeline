@@ -9,8 +9,6 @@ def load_data(df : pd.DataFrame):
         logging.warning("Empty Dataframe. Skipping load.")
         return
     
-    df["ingestion_time"] = datetime.now(timezone.utc)
-    
     engine = get_engine()
     
     staging_table = "crypto_prices_staging"
