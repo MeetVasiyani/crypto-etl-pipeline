@@ -4,22 +4,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+_engine = None
+
 def get_engine():
-    server=os.getenv("DB_SERVER")
-    database=os.getenv("DB_DATABASE")
+    global _engine
     
-    connection_string = (
-        f"mssql+pyodbc://@{server}/{database}"
-        "?driver=ODBC+Driver+17+for+SQL+Server"
-        "&Trusted_Connection=yes"
+    if _engine is None:
+        server = os.getenv("DB_SERVER")
+        database = os.getenv("DB_DATABASE")
+
+        connection_string = (
+            f"mssql+pyodbc://@{server}/{database}"
+            "?driver=ODBC+Driver+17+for+SQL+Server"
+            "&Trusted_Connection=yes"
         )
-    
-    engine = create_engine(connection_string, fast_executemany=True)
 
-    return engine
+        _engine = create_engine(connection_string, fast_executemany=True)
 
-engine = get_engine()
+    return _engine
+
+
 def get_latest_timestamp():
+    engine = get_engine()
     
     with engine.connect() as conn:
         result = conn.execute(text("""

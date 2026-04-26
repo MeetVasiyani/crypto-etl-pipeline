@@ -1,6 +1,6 @@
 import pandas as pd
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 def transform_crypto_data(data : list) -> pd.DataFrame:
     if not data:
@@ -27,7 +27,7 @@ def transform_crypto_data(data : list) -> pd.DataFrame:
         "total_volume" : "volume_24h"
     })
     
-    df["ingestion_time"] = datetime.utcnow()    
+    df["ingestion_time"] = datetime.now(timezone.utc)
     df["last_updated"] = pd.to_datetime(df["last_updated"], errors="coerce")
     
     df = df.dropna(subset=["crypto_id","price_usd"])

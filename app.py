@@ -7,7 +7,6 @@ st.title("Crypto Analytics Dashboard")
 
 engine = get_engine()
 
-@st.cache_data
 def load_data():
     query = """
     SELECT *
@@ -31,8 +30,6 @@ else:
     col2.metric("Top Market Cap", f"${latest_df['market_cap'].max():,.0f}")
     col3.metric("Last Ingestion", latest_df['ingestion_time'].max())
 
-
-
     st.dataframe(latest_df[[
         "crypto_id", "symbol", "price_usd", "market_cap"
     ]])
@@ -47,3 +44,6 @@ else:
     filtered_df = df[df["crypto_id"] == selected_crypto].sort_values("ingestion_time")
 
     st.line_chart(filtered_df.set_index("ingestion_time")["price_usd"])
+    
+    st.subheader("Market Cap Comparison")
+    st.bar_chart(latest_df.set_index("symbol")["market_cap"].sort_values(ascending=False).head(20))
